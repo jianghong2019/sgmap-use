@@ -1,6 +1,6 @@
 {
   "name": "sgmap-use",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Vue 3 composables for 思极地图 (SGMap)",
   "license": "MIT",
   "keywords": [
