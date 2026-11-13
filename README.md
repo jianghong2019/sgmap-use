@@ -410,6 +410,27 @@ useMapEvent('moveend', () => {
 useMapEvent('mouseenter', onEnter, { layerId: 'stations' })
 ```
 
+#### `useMapIdle(callback?, options?)`
+
+监听地图「最终画面」：所有交互、动画和资源加载结束后触发。适合截图、导出、渲染完成统计等场景。
+
+| 参数              | 类型                                  | 默认值     | 说明                                  |
+| --------------- | ----------------------------------- | ------- | ----------------------------------- |
+| `callback`      | `(map: SgMapInstance) => void`      | -       | `idle` 触发时的回调                       |
+| `options.once`  | `boolean`                           | `false` | 只触发一次，触发后自动停止监听                     |
+| `options.repaint` | `boolean`                         | `true`  | 注册时是否 `triggerRepaint()`，确保已空闲的地图也能触发回调 |
+
+返回 `{ isIdle, stop }`：`isIdle` 为当前是否空闲，`stop()` 手动停止监听（卸载时会自动停止）。
+
+```ts
+const { isIdle } = useMapIdle((map) => {
+  // 渲染完全结束，可以截图或导出
+  const dataUrl = map.getCanvas().toDataURL('image/png')
+}, { once: true })
+```
+
+> 与 `useMapEvent('render')` 的区别：`render` 每帧都会触发；`idle` 只在渲染停止时触发一次，代表「画面已稳定」。
+
 #### `useMapClick(handler, options?)`
 
 区分单击 / 双击。思极地图没有独立双击事件，这里用延迟判定：第一次点击后等待 `delay`，期间出现第二次点击视为双击。
@@ -483,6 +504,40 @@ const { flyTo, fitBounds, zoomIn } = useMapView()
 flyTo({ center: [116.39, 39.9], zoom: 12, duration: 1200 })
 fitBounds([[116.1, 39.7], [116.7, 40.1]], { padding: 50, maxZoom: 14 })
 ```
+
+#### `useViewportFeatures(options?)`
+
+响应式获取当前视口内的要素（基于 `map.queryRenderedFeatures`），默认在 `moveend` / `zoomend` / `idle` 后自动刷新。
+
+| 参数              | 类型                  | 默认值                          | 说明                          |
+| --------------- | ------------------- | ---------------------------- | --------------------------- |
+| `layers`        | `string[]`          | -                            | 只查询这些图层的要素                  |
+| `filter`        | `FilterSpecification` | -                          | 使用 Mapbox 表达式过滤要素           |
+| `events`        | `string[]`          | `['moveend', 'zoomend', 'idle']` | 触发刷新的事件                     |
+| `immediate`     | `boolean`           | `true`                       | 地图就绪后是否立即查询一次               |
+| `throttle`      | `number`            | -                            | 节流间隔（毫秒）；不传则用 rAF 合并高频事件     |
+
+返回：
+
+| 字段 | 说明 |
+|------|------|
+| `features` | 当前视口内、可见图层中已渲染的要素（`ShallowRef<GeoJSONFeature[]>`） |
+| `bounds` | 当前视口范围 `{ west, south, east, north }` |
+| `refresh()` | 立即重新查询 |
+| `stop()` | 手动停止监听（卸载时自动停止） |
+
+```ts
+const { features, bounds } = useViewportFeatures({
+  layers: ['stations'],
+  filter: ['==', 'status', 'active'],
+})
+
+watch(features, (list) => {
+  console.log('视口内要素数量', list.length)
+})
+```
+
+> `queryRenderedFeatures` 只返回**可见图层中真正渲染出来的**要素，会遵循图层显隐、样式过滤和碰撞避让。需要某个数据源的全部已加载要素时，请直接使用 `map.querySourceFeatures()`。数据量大时建议设置 `throttle`。
 
 ***
 

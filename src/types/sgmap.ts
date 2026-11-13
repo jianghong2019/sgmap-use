@@ -238,6 +238,8 @@ export interface SgMapInstance {
   getContainer: () => HTMLElement
   resize: () => SgMapInstance
   remove?: () => void
+  /** 请求重绘一帧；用于在地图空闲时主动触发 render / idle。 */
+  triggerRepaint?: () => void
 
   project: (lnglat: LngLatLike) => SgPointLike
   unproject: (point: PointLike) => SgLngLat

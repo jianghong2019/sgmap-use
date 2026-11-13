@@ -68,6 +68,7 @@ export function createMockMap(options: { loaded?: boolean } = {}): MockMap {
     getContainer: () => document.createElement('div'),
     resize: vi.fn(() => map),
     remove: vi.fn(),
+    triggerRepaint: vi.fn(),
     project: vi.fn((lnglat: { lng: number; lat: number }) => ({ x: lnglat.lng * 10, y: lnglat.lat * 10 })),
     unproject: vi.fn((point: { x: number; y: number }) => ({ lng: point.x / 10, lat: point.y / 10 })),
     getCenter: vi.fn(() => ({ lng: 0, lat: 0 })),

@@ -25,6 +25,16 @@ export {
 } from './core/composables/useMapProvider'
 export { useMap, useMapContext, useMapReady } from './core/composables/useMap'
 export { useMapEvent, type UseMapEventOptions } from './core/composables/useMapEvent'
+export {
+  useMapIdle,
+  type UseMapIdleOptions,
+  type UseMapIdleReturn,
+} from './core/composables/useMapIdle'
+export {
+  useViewportFeatures,
+  type UseViewportFeaturesOptions,
+  type UseViewportFeaturesReturn,
+} from './core/composables/useViewportFeatures'
 export { useMapClick, type MapClickEvent, type UseMapClickOptions } from './core/composables/useMapClick'
 export { usePointerLngLat, type UsePointerLngLatOptions } from './core/composables/usePointerLngLat'
 export {

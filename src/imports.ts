@@ -18,6 +18,8 @@ const names = [
   'waitForMapLoad',
   // 事件
   'useMapEvent',
+  'useMapIdle',
+  'useViewportFeatures',
   'useMapClick',
   'usePointerLngLat',
   // 图层
